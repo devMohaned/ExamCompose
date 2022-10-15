@@ -12,17 +12,18 @@ import com.dev.exam.ui.temp.stats.ExamScreen
 
 
 @Composable
-fun ExamNavigation() {
+fun ExamNavigation(isTokenFound: Boolean) {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = ExamScreens.LoginScreen.name) {
+    NavHost(
+        navController = navController,
+        startDestination = if (isTokenFound) ExamScreens.HomeScreen.name else ExamScreens.LoginScreen.name
+    ) {
         composable(ExamScreens.LoginScreen.name) {
             LoginScreen(onSignUpClicked = {
                 navController.navigate(ExamScreens.RegisterScreen.name)
             }, onLoggedIn = {
-                navController.navigate(ExamScreens.HomeScreen.name)
-            }, onTokenFound = {
-                navController.navigate(ExamScreens.HomeScreen.name){
-                    popUpTo(ExamScreens.HomeScreen.name) {
+                navController.navigate(ExamScreens.HomeScreen.name) {
+                    popUpTo(ExamScreens.LoginScreen.name) {
                         inclusive = true
                     }
                 }
@@ -33,7 +34,11 @@ fun ExamNavigation() {
                 navController.popBackStack()
             }) {
 
-                navController.navigate(ExamScreens.HomeScreen.name)
+                navController.navigate(ExamScreens.HomeScreen.name) {
+                    popUpTo(ExamScreens.LoginScreen.name){
+                        inclusive = true
+                    }
+                }
             }
         }
         composable(ExamScreens.HomeScreen.name) {

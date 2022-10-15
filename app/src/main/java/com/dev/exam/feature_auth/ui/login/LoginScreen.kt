@@ -26,6 +26,7 @@ import com.dev.exam.ui.temp.components.PasswordInput
 import com.dev.exam.ui.temp.utils.SpacingValues.SPACING_NORMAL
 import com.dev.exam.ui.temp.utils.SpacingValues.SPACING_QUAD
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onEach
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -33,13 +34,11 @@ fun LoginScreen(
     modifier: Modifier = Modifier,
     onSignUpClicked: () -> Unit,
     onLoggedIn: () -> Unit,
-    onTokenFound: ()->Unit,
-
     ) {
 
     val viewModel: LoginViewModel = hiltViewModel()
-    viewModel.isTokenFound()
-    LoginForm(modifier, viewModel, false, onSignUpClicked, onLoggedIn, onTokenFound) { email, password ->
+
+    LoginForm(modifier, viewModel, false, onSignUpClicked, onLoggedIn) { email, password ->
         Log.e("LoginForm", "Email is $email & password is $password")
         viewModel.login()
     }
@@ -54,7 +53,6 @@ private fun LoginForm(
     isLoading: Boolean,
     onSignUpClicked: () -> Unit,
     onLoggedIn: () -> Unit,
-    onTokenFound: ()->Unit,
     onDone: (String, String) -> Unit,
 ) {
     val state = viewModel.state
@@ -67,9 +65,10 @@ private fun LoginForm(
                     message = event.message
                 )
                 is LoginViewModel.UIEvent.OnLoggedIn -> onLoggedIn()
-                is LoginViewModel.UIEvent.OnTokenFound -> onTokenFound()
             }
         }
+
+
     }
 
     val email = viewModel.email

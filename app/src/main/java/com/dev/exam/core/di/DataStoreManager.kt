@@ -6,6 +6,8 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.dev.exam.core.di.PreferencesKeys.TOKEN
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -31,15 +33,10 @@ class DataStoreManager @Inject constructor(@ApplicationContext appContext: Conte
             settings[PreferencesKeys.TOKEN] = token
         }
     }
-
-   /* val token: Flow<String?> = settingsDataStore.data.map { preferences ->
-        preferences[PreferencesKeys.TOKEN]
-    }*/
-
-    fun getToken(): Flow<String?> = flow{
-        emit(settingsDataStore.data.first()[TOKEN])
-    }
-
-    suspend fun doesTokenExist(): Boolean = settingsDataStore.data.first()[TOKEN] != null
+    val tokenFlow: Flow<Boolean> = settingsDataStore.data
+        .map { preferences ->
+            // No type safety.
+            preferences[TOKEN] != null
+        }
 
 }

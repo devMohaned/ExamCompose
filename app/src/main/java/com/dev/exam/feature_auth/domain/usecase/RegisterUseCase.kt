@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.Flow
 
 class RegisterUseCase(private val authRepo: AuthRepo) {
 
-    operator fun invoke(registerRequest: RegisterRequest): Flow<Resource<RegisterResponse>> {
+    operator fun invoke(registerRequest: RegisterRequest): Flow<Resource<RegisterResponse, RegisterResponse>> {
         return authRepo.register(registerRequest)
     }
 }

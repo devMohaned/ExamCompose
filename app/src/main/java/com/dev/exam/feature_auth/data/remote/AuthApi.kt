@@ -6,6 +6,7 @@ import com.dev.exam.feature_auth.data.remote.dto.RegisterRequestDTO
 import com.dev.exam.feature_auth.data.remote.dto.RegisterResponseDTO
 import com.dev.exam.feature_auth.domain.model.LoginRequest
 import com.dev.exam.feature_auth.domain.model.RegisterRequest
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.Headers
@@ -34,10 +35,10 @@ value: String = "{" +
     }
 
     @POST(LOGIN_PATH)
-    suspend fun login(@Body loginRequest: LoginRequest) : LoginResponseDTO
+    suspend fun login(@Body loginRequest: LoginRequest) : Result<LoginResponseDTO>
 
     @POST(REGISTER_PATH)
-    suspend fun register(@Body registerRequest: RegisterRequest) : RegisterResponseDTO
+    suspend fun register(@Body registerRequest: RegisterRequest) : Result<RegisterResponseDTO>
 
     @POST(FORGET_PASSWORD_PATH)
     fun forgetPassword()

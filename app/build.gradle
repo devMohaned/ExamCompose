@@ -105,6 +105,10 @@ dependencies {
     // Preferences DataStore
     implementation "androidx.datastore:datastore-preferences:1.0.0"
 
+    // Shared Preference
+    implementation "androidx.preference:preference-ktx:$preference_version"
+
+
     // Android Splash Screen Android 12
     implementation 'androidx.core:core-splashscreen:1.0.0'
 

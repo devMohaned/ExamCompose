@@ -1,4 +1,16 @@
 package com.dev.exam.core.util
 
-data class ResponseWrapper<T>(val code: Int, val message: String, val errors: List<String>, val data: T) {
-}
+import com.google.gson.annotations.SerializedName
+
+data class WrappedListResponse<T> (
+    var code: Int,
+    @SerializedName("message") var message : String,
+    @SerializedName("data") var data : List<T>? = null
+)
+
+
+data class WrappedResponse<T> (
+    var code: Int,
+    @SerializedName("message") var message : String,
+    @SerializedName("data") var data : T? = null
+)

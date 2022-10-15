@@ -1,7 +1,7 @@
 package com.dev.exam.core.util
 
-sealed class Resource<T>(val data: T? = null, val message: String? = null) {
-    class Loading<T>(data: T? = null) : Resource<T>(data)
-    class Success<T>(data: T? = null) : Resource<T>(data)
-    class Error<T>(data: T? = null, message: String) : Resource<T>(data, message)
+sealed class Resource<out T,out E> {
+    data class Loading<T>(val data: T? = null) : Resource<T, Nothing>()
+    data class Success<T>(val data: T? = null) : Resource<T, Nothing>()
+    data class Error<E>(val data: E? = null, val message: String) : Resource<Nothing,E>()
 }

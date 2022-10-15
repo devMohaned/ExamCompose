@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface AuthRepo {
 
-    fun login(loginRequest: LoginRequest): Flow<Resource<LoginResponse>>
+    fun login(loginRequest: LoginRequest): Flow<Resource<LoginResponse,LoginResponse>>
 
-    fun register(registerRequest: RegisterRequest): Flow<Resource<RegisterResponse>>
+    fun register(registerRequest: RegisterRequest): Flow<Resource<RegisterResponse, RegisterResponse>>
 }

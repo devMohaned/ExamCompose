@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.Flow
 
 class LoginUseCase(private val authRepo: AuthRepo) {
 
-    operator fun invoke(loginRequest: LoginRequest): Flow<Resource<LoginResponse>> {
+    operator fun invoke(loginRequest: LoginRequest): Flow<Resource<LoginResponse, LoginResponse>> {
         return authRepo.login(loginRequest)
     }
 }

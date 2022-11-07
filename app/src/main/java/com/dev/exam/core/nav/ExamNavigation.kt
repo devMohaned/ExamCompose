@@ -4,8 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.dev.exam.ui.temp.home.HomeScreen
+import com.dev.exam.feature_exams.ui.HomeScreen
 import com.dev.exam.feature_auth.ui.login.LoginScreen
+import com.dev.exam.feature_exams.ui.CreateExamScreen
 import com.dev.exam.ui.temp.register.RegisterScreen
 import com.dev.exam.ui.temp.search.SearchScreen
 import com.dev.exam.ui.temp.stats.ExamScreen
@@ -35,14 +36,25 @@ fun ExamNavigation(isTokenFound: Boolean) {
             }) {
 
                 navController.navigate(ExamScreens.HomeScreen.name) {
-                    popUpTo(ExamScreens.LoginScreen.name){
+                    popUpTo(ExamScreens.LoginScreen.name) {
                         inclusive = true
                     }
                 }
             }
         }
         composable(ExamScreens.HomeScreen.name) {
-            HomeScreen()
+            HomeScreen(onExamCreatedButtonClicked = {
+                navController.navigate(ExamScreens.CreateExamScreen.name) {
+
+                }
+            })
+        }
+
+        composable(ExamScreens.CreateExamScreen.name) {
+            CreateExamScreen(onBackButtonClicked = { navController.popBackStack() }) {
+                navController.popBackStack()
+            }
+
         }
 
         composable(ExamScreens.ExamScreen.name) {

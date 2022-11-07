@@ -2,10 +2,12 @@ package com.dev.exam.feature_exams.data.repo
 
 import com.dev.exam.core.util.Resource
 import com.dev.exam.core.util.WrappedListResponse
+import com.dev.exam.core.util.WrappedResponse
 import com.dev.exam.feature_exams.data.dto.ExamResponseDTO
 import com.dev.exam.feature_exams.data.remote.ExamApi
 import com.dev.exam.feature_exams.domain.ExamRepo
 import com.dev.exam.feature_exams.domain.model.ExamEntity
+import com.dev.exam.feature_exams.domain.model.ExamRequest
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.Flow
@@ -25,7 +27,7 @@ class ExamRepoImpl @Inject constructor(private val examApi: ExamApi) : ExamRepo 
                         ExamEntity(
                             examResponse.id,
                             examResponse.title,
-                            examResponse.description,
+                            examResponse.descreption,
                             examResponse.creatorId
                         )
                     )
@@ -34,6 +36,51 @@ class ExamRepoImpl @Inject constructor(private val examApi: ExamApi) : ExamRepo 
             } else {
                 val type = object : TypeToken<WrappedListResponse<ExamResponseDTO>>() {}.type
                 val err = Gson().fromJson<WrappedListResponse<ExamResponseDTO>>(
+                    response.errorBody()!!.charStream(), type
+                )!!
+                err.code = response.code()
+                emit(Resource.Error(err, message = err.message))
+            }
+        }
+    }
+
+    override suspend fun createExam(examRequest: ExamRequest): Flow<Resource<ExamEntity, WrappedResponse<ExamResponseDTO>>> {
+        return flow {
+            emit(Resource.Loading())
+            val response = examApi.createExam(examRequest)
+            if (response.isSuccessful) {
+                val body = response.body()!!
+                var exam: ExamEntity? = null
+                body.data?.let { examResponse ->
+                    exam = examResponse.toExamEntity()
+                }
+                emit(Resource.Success(exam))
+            } else {
+                val type = object : TypeToken<WrappedResponse<ExamResponseDTO>>() {}.type
+                val err = Gson().fromJson<WrappedResponse<ExamResponseDTO>>(
+                    response.errorBody()!!.charStream(), type
+                )!!
+                err.code = response.code()
+                emit(Resource.Error(err, message = err.message))
+            }
+        }
+    }
+
+
+    override suspend fun updateExam(examRequest: ExamRequest): Flow<Resource<ExamEntity, WrappedResponse<ExamResponseDTO>>> {
+        return flow {
+            emit(Resource.Loading())
+            val response = examApi.updateExam(examRequest)
+            if (response.isSuccessful) {
+                val body = response.body()!!
+                var exam: ExamEntity? = null
+                body.data?.let { examResponse ->
+                    exam = examResponse.toExamEntity()
+                }
+                emit(Resource.Success(exam))
+            } else {
+                val type = object : TypeToken<WrappedResponse<ExamResponseDTO>>() {}.type
+                val err = Gson().fromJson<WrappedResponse<ExamResponseDTO>>(
                     response.errorBody()!!.charStream(), type
                 )!!
                 err.code = response.code()

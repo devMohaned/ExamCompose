@@ -10,7 +10,10 @@ import com.dev.exam.feature_auth.domain.usecase.RegisterUseCase
 import com.dev.exam.feature_exams.data.remote.ExamApi
 import com.dev.exam.feature_exams.data.repo.ExamRepoImpl
 import com.dev.exam.feature_exams.domain.ExamRepo
+import com.dev.exam.feature_exams.domain.model.ExamRequest
+import com.dev.exam.feature_exams.domain.usecase.CreateExamUseCase
 import com.dev.exam.feature_exams.domain.usecase.GetAllExamsUseCase
+import com.dev.exam.feature_exams.domain.usecase.UpdateExamUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,11 +24,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object ExamModule {
-
-    @Provides
-    fun providesGetAllExams(examRepo: ExamRepo): GetAllExamsUseCase {
-        return GetAllExamsUseCase(examRepo)
-    }
 
     @Provides
     fun providesExamRepository(examApi: ExamApi): ExamRepo {

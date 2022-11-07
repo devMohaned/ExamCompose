@@ -3,37 +3,39 @@ package com.dev.exam.feature_exams.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dev.exam.core.util.Resource
-import com.dev.exam.core.util.WrappedResponse
-import com.dev.exam.feature_exams.data.dto.ExamResponseDTO
 import com.dev.exam.feature_exams.domain.model.ExamEntity
+import com.dev.exam.feature_exams.domain.model.ExamRequest
+import com.dev.exam.feature_exams.domain.usecase.CreateExamUseCase
 import com.dev.exam.feature_exams.domain.usecase.GetAllExamsUseCase
+import com.dev.exam.feature_exams.domain.usecase.UpdateExamUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(private val getAllExamsUseCase: GetAllExamsUseCase) :
+class HomeViewModel @Inject constructor(
+    private val getAllExamsUseCase: GetAllExamsUseCase,
+    private val createExamUseCase: CreateExamUseCase,
+    private val updateExamUseCase: UpdateExamUseCase
+) :
     ViewModel() {
 
-    private val state = MutableStateFlow<ExamState>(ExamState.Init)
-    val mState: StateFlow<ExamState> get() = state
+    private val _state = MutableStateFlow<ExamState>(ExamState())
+    val state: StateFlow<ExamState> get() = _state
+
+    private val _eventFlow = MutableSharedFlow<UIEvent>()
+    val eventFlow = _eventFlow.asSharedFlow()
 
 
     private fun setLoading() {
-        state.value = ExamState.IsLoading(true)
+        _state.value = _state.value.copy(isLoading = true)
     }
 
     private fun hideLoading() {
-        state.value = ExamState.IsLoading(false)
+        _state.value = _state.value.copy(isLoading = false)
     }
 
-    private fun showToast(message: String) {
-        state.value = ExamState.ShowToast(message)
-    }
 
 
     fun getAllExams() {
@@ -44,13 +46,38 @@ class HomeViewModel @Inject constructor(private val getAllExamsUseCase: GetAllEx
                 }
                 .catch { exception ->
                     hideLoading()
-                    showToast(exception.message.toString())
+                    _eventFlow.emit(UIEvent.ShowSnackBar(exception.message.toString()))
                 }
                 .collect { resource ->
                     hideLoading()
                     when (resource) {
-                        is Resource.Error -> state.value = ExamState.ErrorExams(resource.message)
-                        is Resource.Success -> state.value = ExamState.SuccessExams(resource.data)
+                        is Resource.Error -> _state.value = ExamState()
+                        is Resource.Success -> _state.value = ExamState(resource.data ?: emptyList())
+                        is Resource.Loading -> setLoading()
+                    }
+                }
+        }
+    }
+
+
+
+
+    fun updateExam() {
+        viewModelScope.launch {
+            val examRequest = ExamRequest(20,"NEW DESCRIPTION of my user xyz", "NEW TITLE of xyz User")
+            updateExamUseCase.invoke(examRequest)
+                .onStart {
+                    setLoading()
+                }
+                .catch { exception ->
+                    hideLoading()
+                    _eventFlow.emit(UIEvent.ShowSnackBar(exception.message.toString()))
+                }
+                .collect { resource ->
+                    hideLoading()
+                    when (resource) {
+                        is Resource.Error -> _state.value = ExamState()
+                        is Resource.Success -> _state.value = ExamState()
                         is Resource.Loading -> setLoading()
                     }
                 }
@@ -60,11 +87,10 @@ class HomeViewModel @Inject constructor(private val getAllExamsUseCase: GetAllEx
 
 }
 
-sealed class ExamState {
-    object Init : ExamState()
-    data class IsLoading(val isLoading: Boolean) : ExamState()
-    data class ShowToast(val message: String) : ExamState()
-    data class SuccessExams(val examEntity: List<ExamEntity>?) : ExamState()
-    data class ErrorExams(val rawResponse: String) : ExamState()
+data class ExamState(val examList: List<ExamEntity> = emptyList(),val isLoading: Boolean = false)
+
+sealed class UIEvent {
+    data class ShowToast(val message: String) : UIEvent()
+    data class ShowSnackBar(val message: String) : UIEvent()
 }
 

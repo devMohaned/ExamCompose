@@ -1,12 +1,17 @@
 package com.dev.exam.core.nav
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.dev.exam.feature_exams.ui.HomeScreen
 import com.dev.exam.feature_auth.ui.login.LoginScreen
+import com.dev.exam.feature_exams.domain.model.ExamEntity
 import com.dev.exam.feature_exams.ui.CreateExamScreen
+import com.dev.exam.feature_exams.ui.UpdateExamScreen
+import com.dev.exam.feature_questions.ui.AddQuestionSuccessScreen
 import com.dev.exam.ui.temp.register.RegisterScreen
 import com.dev.exam.ui.temp.search.SearchScreen
 import com.dev.exam.ui.temp.stats.ExamScreen
@@ -47,7 +52,19 @@ fun ExamNavigation(isTokenFound: Boolean) {
                 navController.navigate(ExamScreens.CreateExamScreen.name) {
 
                 }
-            })
+            },
+                onUpdateExamButtonClicked = {examId->
+                    navController.navigate(
+                        ExamScreens.UpdateExamScreen.name
+                                + "/?examId=${examId}"
+                    )
+                },
+                onAddQuestionPerExamButtonClicked = {examId->
+                    navController.navigate(
+                        ExamScreens.AddQuestionScreen.name
+                                + "/?examId=${examId}"
+                    )
+                })
         }
 
         composable(ExamScreens.CreateExamScreen.name) {
@@ -57,6 +74,21 @@ fun ExamNavigation(isTokenFound: Boolean) {
 
         }
 
+        composable(ExamScreens.UpdateExamScreen.name
+                + "/?examId={examId}",
+            arguments = listOf(navArgument("examId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val id =  backStackEntry.arguments?.getInt("examId") ?: -1
+            UpdateExamScreen(
+                onBackButtonClicked = { navController.popBackStack() },
+                examId = id
+            ) {
+                navController.popBackStack()
+            }
+
+        }
+
+
         composable(ExamScreens.ExamScreen.name) {
             ExamScreen()
         }
@@ -64,6 +96,12 @@ fun ExamNavigation(isTokenFound: Boolean) {
             SearchScreen()
         }
 
+        composable(ExamScreens.AddQuestionScreen.name  + "/?examId={examId}",
+            arguments = listOf(navArgument("examId") { type = NavType.IntType })){
+                backStackEntry ->
+            val id =  backStackEntry.arguments?.getInt("examId") ?: -1
+            AddQuestionSuccessScreen()
+        }
 
     }
 }

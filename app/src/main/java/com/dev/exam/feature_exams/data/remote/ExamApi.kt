@@ -11,7 +11,7 @@ interface ExamApi {
 
     companion object {
         const val EXAMS: String = "api/exams"
-        const val EXAMS_BY_ID: String = "api/exams/getexam?id={id}"
+        const val EXAMS_BY_ID: String = "api/exams/getexam"
     }
 
     @GET(EXAMS)
@@ -24,7 +24,7 @@ interface ExamApi {
     suspend fun updateExam(@Body examRequest: ExamRequest) : Response<WrappedResponse<ExamResponseDTO>>
 
     @GET(EXAMS_BY_ID)
-    suspend fun getExamById(@Path("id") id: Int) : Response<WrappedResponse<ExamResponseDTO>>
+    suspend fun getExamById(@Query("id") id: Int) : Response<WrappedResponse<ExamResponseDTO>>
 
 
 }

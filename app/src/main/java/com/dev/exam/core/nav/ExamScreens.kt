@@ -8,7 +8,10 @@ enum class ExamScreens {
     HomeScreen,
     SearchScreen,
     ExamScreen,
-    CreateExamScreen,;
+    CreateExamScreen,
+    UpdateExamScreen,
+    AddQuestionScreen,
+    UpdateQuestionScreen,;
 
 
     companion object {
@@ -19,6 +22,9 @@ enum class ExamScreens {
             SearchScreen.name -> SearchScreen
             ExamScreen.name -> ExamScreen
             CreateExamScreen.name -> CreateExamScreen
+            UpdateExamScreen.name -> UpdateExamScreen
+            AddQuestionScreen.name -> AddQuestionScreen
+            UpdateQuestionScreen.name -> UpdateQuestionScreen
             else -> throw IllegalArgumentException("No Screen Found")
         }
     }

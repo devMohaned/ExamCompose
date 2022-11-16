@@ -44,6 +44,25 @@ class ExamRepoImpl @Inject constructor(private val examApi: ExamApi) : ExamRepo 
         }
     }
 
+    override suspend fun getExamById(id: Int): Flow<Resource<ExamEntity, WrappedListResponse<ExamResponseDTO>>> {
+        return flow {
+            emit(Resource.Loading())
+            val response = examApi.getExamById(id)
+            if (response.isSuccessful) {
+                val body = response.body()!!
+                val exam =  body.data!!.toExamEntity()
+                emit(Resource.Success(exam))
+            } else {
+                val type = object : TypeToken<WrappedListResponse<ExamResponseDTO>>() {}.type
+                val err = Gson().fromJson<WrappedListResponse<ExamResponseDTO>>(
+                    response.errorBody()!!.charStream(), type
+                )!!
+                err.code = response.code()
+                emit(Resource.Error(err, message = err.message))
+            }
+        }
+    }
+
     override suspend fun createExam(examRequest: ExamRequest): Flow<Resource<ExamEntity, WrappedResponse<ExamResponseDTO>>> {
         return flow {
             emit(Resource.Loading())

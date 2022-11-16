@@ -9,4 +9,5 @@
     <string name="go_back">Go Back</string>
     <string name="register">Register</string>
     <string name="create_exam">Create Exam</string>
+    <string name="update_exam">Update Exam</string>
 </resources>

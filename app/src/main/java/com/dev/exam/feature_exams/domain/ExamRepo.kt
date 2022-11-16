@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface ExamRepo {
     suspend fun getAllExams(): Flow<Resource<List<ExamEntity>, WrappedListResponse<ExamResponseDTO>>>
+    suspend fun getExamById(id: Int): Flow<Resource<ExamEntity, WrappedListResponse<ExamResponseDTO>>>
     suspend fun createExam(examRequest: ExamRequest): Flow<Resource<ExamEntity, WrappedResponse<ExamResponseDTO>>>
     suspend fun updateExam(examRequest: ExamRequest): Flow<Resource<ExamEntity, WrappedResponse<ExamResponseDTO>>>
 

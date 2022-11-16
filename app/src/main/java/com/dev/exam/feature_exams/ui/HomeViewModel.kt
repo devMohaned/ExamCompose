@@ -60,31 +60,6 @@ class HomeViewModel @Inject constructor(
     }
 
 
-
-
-    fun updateExam() {
-        viewModelScope.launch {
-            val examRequest = ExamRequest(20,"NEW DESCRIPTION of my user xyz", "NEW TITLE of xyz User")
-            updateExamUseCase.invoke(examRequest)
-                .onStart {
-                    setLoading()
-                }
-                .catch { exception ->
-                    hideLoading()
-                    _eventFlow.emit(UIEvent.ShowSnackBar(exception.message.toString()))
-                }
-                .collect { resource ->
-                    hideLoading()
-                    when (resource) {
-                        is Resource.Error -> _state.value = ExamState()
-                        is Resource.Success -> _state.value = ExamState()
-                        is Resource.Loading -> setLoading()
-                    }
-                }
-        }
-    }
-
-
 }
 
 data class ExamState(val examList: List<ExamEntity> = emptyList(),val isLoading: Boolean = false)
